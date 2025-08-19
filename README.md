@@ -2,6 +2,8 @@
 
 A simple Streamlit UI for LangChain's [Deep Agents](https://github.com/langchain-ai/deepagents/) where multiple agents can be implemented and switched between (in this case, a normal deep agent and a deep researcher). Different MCP Servers can also be integrated.
 
+<img width="2559" height="1396" alt="image" src="https://github.com/user-attachments/assets/bf3599b4-22e1-4033-90c1-967f559ce029" />
+
 ## 🚀 Quickstart
 
 1. Follow the instructions from this link to install uv package: https://github.com/astral-sh/uv
