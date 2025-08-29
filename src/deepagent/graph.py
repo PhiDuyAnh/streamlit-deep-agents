@@ -10,7 +10,7 @@ from deepagent.prompts import AGENT_INSTRUCTIONS
 from deepagent.tools import TOOLS
 
 model = ChatOpenAI(
-    model=os.environ["MODEL_NAME"],
+    model=os.environ["NORMAL_MODEL_NAME"],
     api_key=os.environ["OPENAI_API_KEY"],
 )
 
