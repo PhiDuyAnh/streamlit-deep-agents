@@ -1,6 +1,7 @@
 import asyncio, nest_asyncio
 import uuid
 import os
+import json
 from datetime import UTC, datetime
 
 import streamlit as st
@@ -75,7 +76,7 @@ def create_agent(mode: str, model_name: str):
         research_sub_agent, critique_sub_agent = create_sub_agents()
         model = ChatOpenAI(model=model_name, api_key=os.environ["OPENAI_API_KEY"])
         agent = create_deep_agent(
-            tools=all_tools,
+            tools=TOOLS,
             model=model,
             subagents=[research_sub_agent, critique_sub_agent],
             instructions=format_instructions(RESEARCH_INSTRUCTIONS),
@@ -124,8 +125,8 @@ async def main():
 
     # Create the agents
     model_names = {
-        "Normal Mode": os.environ["MODEL_NAME"],
-        "Deep Research": os.environ["MODEL_NAME"]
+        "Normal Mode": os.environ["NORMAL_MODEL_NAME"],
+        "Deep Research": os.environ["DEEP_RESEARCH_MODEL"]
     }
 
     agents = {name: create_agent(name, model_names[name]) for name in tab_names}
@@ -182,6 +183,20 @@ async def main():
             config = {"configurable": {"thread_id": st.session_state["thread_id"][active_tab]}}
             agent = agents[active_tab]
             response = await invoke_agent_responses(agent, prompt, config)
+            print(repr(response))
+            try:
+                with open("response.json", "w") as f:
+                    json.dump(response, f, indent=4, default=lambda o: o.__dict__ if hasattr(o, '__dict__') else str(o))
+            except Exception as e:
+                print("/n/nError extracting response:", str(e))
+        
+        if active_tab == "Deep Research":
+            all_files = response.get("files", {})
+            if "final_report.md" in all_files and all_files["final_report.md"]:
+                displayed_response = all_files["final_report.md"]
+            else:
+                displayed_response = response["messages"][-1].content
+        elif active_tab == "Normal Mode":
             displayed_response = response["messages"][-1].content
 
         st.session_state["messages"][active_tab].append({"role": "assistant", "content": displayed_response})
